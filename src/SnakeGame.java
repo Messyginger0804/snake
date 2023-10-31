@@ -1,6 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.annotation.Documented;
+// import java.lang.annotation.Documented;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
@@ -24,6 +24,8 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     int boardWidth;
     int boardHeight;
     int tileSize = 25;
+
+    // boolean menuScreen = true;
 
     // snake
     Tile snakeHead;
@@ -69,6 +71,12 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
     public void draw(Graphics g) {
 
+        // if (menuScreen) {
+        // g.drawString("Welcome to JC's Snake game. Press any arrow key to begin",
+        // tileSize - 0,
+        // tileSize + 50);
+        // }
+
         // grid
         for (int i = 0; i < boardWidth / tileSize; i++) {
             // (x1, y1, x2, y2)
@@ -78,7 +86,8 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
         // food
         g.setColor(Color.red);
-        g.fillRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize);
+        // g.fillRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize);
+        g.fill3DRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize, true);
 
         // snake head
         g.setColor(Color.green);
@@ -87,7 +96,29 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         // snake body
         for (int i = 0; i < snakeBody.size(); i++) {
             Tile snakePart = snakeBody.get(i);
-            g.fillRect(snakePart.x * tileSize, snakePart.y * tileSize, tileSize, tileSize);
+            // g.fillRect(snakePart.x * tileSize, snakePart.y * tileSize, tileSize,
+            // tileSize);
+            g.fill3DRect(snakePart.x * tileSize, snakePart.y * tileSize, tileSize, tileSize, true);
+        }
+
+        // start screen
+        // welomce to JC's snake game use directions arrow keys to start. Press enter to
+        // exit start screen
+
+        // if (gameLoop.isRunning()) {
+        // g.setColor(Color.blue);
+        // g.drawString("Welcome to JC's Snake game" + "... Press any arrow key to
+        // begin", tileSize - 0,
+        // tileSize + 50);
+        // }
+
+        // score
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        if (gameOver) {
+            g.setColor(Color.red);
+            g.drawString("GAME OVER: " + String.valueOf(snakeBody.size()), tileSize - 16, tileSize);
+        } else {
+            g.drawString("Score: " + String.valueOf(snakeBody.size()), tileSize - 16, tileSize);
         }
     }
 
@@ -125,14 +156,19 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         snakeHead.x += velocityX;
         snakeHead.y += velocityY;
 
-        // game over condition
-        for(int i = 0; i < snakeBody.size(); i++){
+        for (int i = 0; i < snakeBody.size(); i++) {
             Tile snakePart = snakeBody.get(i);
-            // collide with the snake head
-            if(collide(snakeHead, snakePart)){
+
+            // collide with snake head
+            if (collide(snakeHead, snakePart)) {
                 gameOver = true;
-        } else {
-            gameOver = false;
+            }
+        }
+
+        if (snakeHead.x * tileSize < 0 || snakeHead.x * tileSize > boardWidth || // passed left border or right border
+                snakeHead.y * tileSize < 0 || snakeHead.y * tileSize > boardHeight) { // passed top border or bottom
+                                                                                      // border
+            gameOver = true;
         }
     }
 
@@ -143,6 +179,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         if (gameOver) {
             gameLoop.stop();
         }
+
     }
 
     @Override
